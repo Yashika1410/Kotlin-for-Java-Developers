@@ -3,23 +3,25 @@ package mastermind
 data class Evaluation(val rightPosition: Int, val wrongPosition: Int)
 
 fun evaluateGuess(secret: String, guess: String): Evaluation {
-    var rightPosition=0
-    var wrongPosition=0
-    val n=secret.length
-    var list= mutableListOf<Char>()
-    var i=0
-    while (i<n){
-        if(guess[i] in secret)
-        {if(secret.indexOf(guess[i])==i)
-        {
-            list.add(guess[i])
-            rightPosition++
+    val secretArray = secret.toCharArray()
+    val guessArray = guess.toCharArray()
+    val rightPosition = 'R'
+    val wrongPosition = 'W'
+
+    secretArray.forEachIndexed { i, c ->
+        if (guessArray[i] == c) {
+            secretArray[i] = rightPosition
+            guessArray[i] = rightPosition
         }
-            else
-                if (!list.contains(guess[i]))
-                wrongPosition++
-        }
-       i++
     }
-    return Evaluation(rightPosition,wrongPosition)
+
+    secretArray.forEachIndexed { i, c ->
+        if (c != 'R' && guessArray.contains(c)) {
+            secretArray[i] = wrongPosition
+            guessArray[guessArray.indexOf(c)] = wrongPosition
+        }
+    }
+
+    return Evaluation(secretArray.count { it == rightPosition },
+        secretArray.count { it == wrongPosition })
 }
